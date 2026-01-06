@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crop Recommendation | AgriTech Solutions</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #4caf50;
+        --secondary-color: #388e3c;
+        --accent-color: #8bc34a;
+        --dark-color: #2e7d32;
+        --light-color: #c8e6c9;
+        --text-color: #333;
+        --light-text: #f8f8f8;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f9f9f9;
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+
+      /* Navigation */
+      nav {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--dark-color)
+        );
+        padding: 1rem 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo img {
+        height: 40px;
+        margin-right: 10px;
+      }
+
+      .logo h1 {
+        color: rgb(255, 255, 255);
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .nav-links {
+        display: flex;
+        list-style: none;
+      }
+
+      .nav-links li {
+        margin-left: 1.5rem;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+
+        padding: 0.5rem 0.8rem;
+        border-radius: 4px;
+        font-size: 0.86rem;
+      }
+
+      .nav-links a:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .menu-toggle {
+        display: none;
+        cursor: pointer;
+        color: white;
+        font-size: 1.5rem;
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-top: 80px;
+        padding: 3rem 5%;
+      }
+
+      .page-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        animation: fadeInDown 0.8s ease;
+      }
+
+      .page-header h2 {
+        font-size: 2.5rem;
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+        position: relative;
+        display: inline-block;
+      }
+
+      .page-header h2::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background-color: var(--accent-color);
+      }
+
+      .page-header p {
+        color: #666;
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      /* Recommendation Form */
+      .recommendation-container {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        max-width: 1000px;
+        margin: 0 auto;
+        animation: fadeInUp 0.8s ease;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--dark-color);
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: var(--transition);
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: var(--accent-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
+      }
+
+      .submit-btn {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: block;
+        margin: 2rem auto 0;
+        width: 200px;
+        text-align: center;
+      }
+
+      .submit-btn:hover {
+        background-color: var(--dark-color);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Results Table */
+      .results-container {
+        margin-top: 3rem;
+        animation: fadeIn 1s ease;
+        display: none;
+      }
+
+      .results-title {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: var(--dark-color);
+        font-size: 1.8rem;
+      }
+
+      .results-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        box-shadow: var(--shadow);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .results-table th {
+        background-color: var(--dark-color);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+      }
+
+      .results-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+      }
+
+      .results-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      .results-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .results-table tr:hover {
+        background-color: var(--light-color);
+      }
+
+      .recommended-crop {
+        font-weight: 600;
+        color: var(--primary-color);
+        animation: pulse 2s infinite;
+      }
+
+      /* Info Section */
+      .info-section {
+        margin-top: 4rem;
+        padding: 2rem;
+        background-color: var(--light-color);
+        border-radius: 10px;
+        animation: fadeIn 1.2s ease;
+      }
+
+      .info-section h3 {
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      .info-section p {
+        color: #555;
+        margin-bottom: 1rem;
+      }
+
+      /* Footer */
+      footer {
+        background: linear-gradient(
+          135deg,
+          var(--dark-color),
+          var(--primary-color)
+        );
+        color: white;
+        padding: 2rem 5%;
+        text-align: center;
+        margin-top: 3rem;
+      }
+
+      .footer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .footer-logo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .footer-logo img {
+        height: 40px;
+        margin-right: 10px;
+      }
+
+      .footer-logo h2 {
+        font-size: 1.5rem;
+      }
+
+      .copyright {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-top: 1rem;
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .nav-links {
+          position: fixed;
+          top: 70px;
+          left: -100%;
+          width: 100%;
+          height: calc(100vh - 70px);
+          background-color: var(--dark-color);
+          flex-direction: column;
+          align-items: center;
+          padding-top: 2rem;
+          transition: var(--transition);
+        }
+
+        .nav-links.active {
+          left: 0;
+        }
+
+        .nav-links li {
+          margin: 1rem 0;
+        }
+
+        .menu-toggle {
+          display: block;
+        }
+
+        .page-header h2 {
+          font-size: 2rem;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .main-content {
+          padding: 2rem 3%;
+        }
+
+        .recommendation-container {
+          padding: 1.5rem;
+        }
+
+        .page-header h2 {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="logo">
+        <h1>AgriTech Solutions</h1>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="weather.html">Weather Forecast</a></li>
+        <li>
+          <a href="crop-recommendation.html" class="active"
+            >Crop Recommendation</a
+          >
+        </li>
+        <li><a href="disease-detection.html">Crop Disease Detection</a></li>
+        <li>
+          <a href="health-classification.html">Crop Health Classification</a>
+        </li>
+        <li><a href="yield-prediction.html">Crop Yield Prediction</a></li>
+      </ul>
+      <div class="menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="page-header">
+        <h2>Crop Recommendation System</h2>
+        <p>
+          Enter your soil and environmental parameters to get personalized crop
+          recommendations for optimal yield and sustainability.
+        </p>
+      </div>
+
+      <div class="recommendation-container">
+        <form id="cropRecommendationForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="nitrogen">Nitrogen (N) ppm</label>
+              <input
+                type="number"
+                id="nitrogen"
+                name="nitrogen"
+                placeholder="e.g. 25"
+                min="0"
+                max="140"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="phosphorus">Phosphorus (P) ppm</label>
+              <input
+                type="number"
+                id="phosphorus"
+                name="phosphorus"
+                placeholder="e.g. 42"
+                min="5"
+                max="145"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="potassium">Potassium (K) ppm</label>
+              <input
+                type="number"
+                id="potassium"
+                name="potassium"
+                placeholder="e.g. 38"
+                min="5"
+                max="205"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="temperature">Temperature (°C)</label>
+              <input
+                type="number"
+                id="temperature"
+                name="temperature"
+                placeholder="e.g. 22.5"
+                step="0.1"
+                min="8"
+                max="43"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="humidity">Humidity (%)</label>
+              <input
+                type="number"
+                id="humidity"
+                name="humidity"
+                placeholder="e.g. 65"
+                min="15"
+                max="100"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="ph">pH Value</label>
+              <input
+                type="number"
+                id="ph"
+                name="ph"
+                placeholder="e.g. 6.5"
+                step="0.1"
+                min="3.5"
+                max="9.5"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="rainfall">Rainfall (mm)</label>
+              <input
+                type="number"
+                id="rainfall"
+                name="rainfall"
+                placeholder="e.g. 120"
+                min="20"
+                max="300"
+                required
+              />
+            </div>
+          </div>
+          <button type="submit" class="submit-btn">Get Recommendation</button>
+        </form>
+
+        <div class="results-container" id="resultsContainer">
+          <h3 class="results-title">Recommended Crops</h3>
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Nitrogen (N)</th>
+                <th>Phosphorus (P)</th>
+                <th>Potassium (K)</th>
+                <th>Temperature</th>
+                <th>Humidity</th>
+                <th>pH Value</th>
+                <th>Rainfall</th>
+                <th>Recommended Crop</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody">
+              <!-- Results will be inserted here by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h3>How Our Recommendation System Works</h3>
+        <p>
+          Our crop recommendation system uses machine learning algorithms
+          trained on thousands of data points to analyze your soil and
+          environmental conditions. The system compares your inputs with optimal
+          growing conditions for various crops to determine the best matches.
+        </p>
+        <p>
+          For accurate recommendations, please provide measurements from soil
+          tests and local weather stations when possible. The more precise your
+          inputs, the better our recommendations will be.
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-logo">
+          <h2>AgriTech Solutions</h2>
+        </div>
+        <p class="copyright">© 2023 AgriTech Solutions. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      // Mobile Menu Toggle
+      const menuToggle = document.querySelector(".menu-toggle");
+      const navLinks = document.querySelector(".nav-links");
+
+      menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("active");
+      });
+
+      // Form Submission
+      // Form Submission for Crop Recommendation
+      document
+        .getElementById("cropRecommendationForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Get form values
+          const nitrogen = document.getElementById("nitrogen").value;
+          const phosphorus = document.getElementById("phosphorus").value;
+          const potassium = document.getElementById("potassium").value;
+          const temperature = document.getElementById("temperature").value;
+          const humidity = document.getElementById("humidity").value;
+          const ph = document.getElementById("ph").value;
+          const rainfall = document.getElementById("rainfall").value;
+
+          // Create the data object to send to Flask
+          const formData = {
+            nitrogen: parseFloat(nitrogen),
+            phosphorus: parseFloat(phosphorus),
+            potassium: parseFloat(potassium),
+            temperature: parseFloat(temperature),
+            humidity: parseFloat(humidity),
+            ph: parseFloat(ph),
+            rainfall: parseFloat(rainfall),
+          };
+
+          // Send data to Flask backend
+          fetch("http://127.0.0.1:5000/predict", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              const recommendedCrop = data.recommendedCrop;
+
+              // Display results in the table
+              const resultsBody = document.getElementById("resultsBody");
+              resultsBody.innerHTML = `
+            <tr>
+                <td>${nitrogen} ppm</td>
+                <td>${phosphorus} ppm</td>
+                <td>${potassium} ppm</td>
+                <td>${temperature}°C</td>
+                <td>${humidity}%</td>
+                <td>${ph}</td>
+                <td>${rainfall} mm</td>
+                <td class="recommended-crop">${recommendedCrop}</td>
+            </tr>
+        `;
+
+              // Show results container with animation
+              const resultsContainer =
+                document.getElementById("resultsContainer");
+              resultsContainer.style.display = "block";
+
+              // Scroll to results
+              resultsContainer.scrollIntoView({ behavior: "smooth" });
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        });
+    </script>
+  </body>
+</html>

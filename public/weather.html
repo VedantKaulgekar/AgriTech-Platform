@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wheat Weather Forecast | AgriTech Solutions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #388E3C;
+            --accent-color: #8BC34A;
+            --dark-color: #2E7D32;
+            --light-color: #C8E6C9;
+            --text-color: #333;
+            --light-text: #f8f8f8;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo h1 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 1.5rem;
+            position: relative;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+           
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.86rem;
+        }
+
+        .nav-links a:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-links a.active {
+            border-color: white;
+            position: relative;
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+           
+            border-radius: 50%;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            padding: 3rem 5%;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .page-header h2 {
+            font-size: 2.5rem;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .page-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent-color);
+        }
+
+        .page-header p {
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Search Bar */
+        .search-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
+        }
+
+        .search-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .search-btn:hover {
+            background-color: var(--dark-color);
+        }
+
+        /* Weather Forecast */
+        .forecast-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            animation: fadeIn 1s ease;
+        }
+
+        .current-weather {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            align-items: center;
+        }
+
+        .weather-main {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .weather-icon {
+            font-size: 4rem;
+            color: #FFC107;
+        }
+
+        .weather-temp {
+            font-size: 3rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .weather-details {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .weather-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-item {
+            background-color: var(--light-color);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Daily Forecast */
+        .daily-forecast {
+            margin-top: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light-color);
+        }
+
+        .forecast-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .forecast-card {
+            background-color: var(--light-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .forecast-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .forecast-day {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .forecast-date {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .forecast-icon {
+            font-size: 2rem;
+            margin: 0.5rem 0;
+            color: #FF9800;
+        }
+
+        .forecast-temp {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .forecast-desc {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        /* Wheat Advisory */
+        .advisory-container {
+            margin-top: 3rem;
+            background-color: #FFF9C4;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 5px solid #FFC107;
+        }
+
+        .advisory-title {
+            font-size: 1.2rem;
+            color: #795548;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .advisory-title i {
+            color: #FF9800;
+        }
+
+        .advisory-content {
+            color: #5D4037;
+        }
+
+        .advisory-content p {
+            margin-bottom: 0.8rem;
+        }
+
+        /* Info Section */
+        .info-section {
+            margin-top: 4rem;
+            padding: 2rem;
+            background-color: var(--light-color);
+            border-radius: 10px;
+            animation: fadeIn 1.2s ease;
+        }
+
+        .info-section h3 {
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .info-section p {
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--dark-color), var(--primary-color));
+            color: white;
+            padding: 2rem 5%;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .footer-logo h2 {
+            font-size: 1.5rem;
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 1rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background-color: var(--dark-color);
+                flex-direction: column;
+                align-items: center;
+                padding-top: 2rem;
+                transition: var(--transition);
+            }
+
+            .nav-links.active {
+                left: 0;
+            }
+
+            .nav-links li {
+                margin: 1rem 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .page-header h2 {
+                font-size: 2rem;
+            }
+
+            .weather-main {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .forecast-cards {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+
+            .search-form {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-btn {
+                padding: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 2rem 3%;
+            }
+
+            .forecast-container {
+                padding: 1.5rem;
+            }
+
+            .page-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .weather-main {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .forecast-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">
+            <img src="https://via.placeholder.com/40" alt="AgriTech Logo">
+            <h1>AgriTech Solutions</h1>
+        </div>
+        <ul class="nav-links">
+            <li class="tooltip">
+                <a href="index.html">Home</a>
+                <span class="tooltiptext">Home Page</span>
+            </li>
+            <li class="tooltip">
+                <a href="weather.html" class="active">Weather Forecast</a>
+                <span class="tooltiptext">Weather Forecast</span>
+            </li>
+            <li class="tooltip">
+                <a href="crop-recommendation.html">Crop Recommendation</a>
+                <span class="tooltiptext">Crop Recommendation</span>
+            </li>
+            <li class="tooltip">
+                <a href="disease-detection.html">Crop Disease Detection</a>
+                <span class="tooltiptext">Disease Detection</span>
+            </li>
+            <li class="tooltip">
+                <a href="health-classification.html">Crop Health Classification</a>
+                <span class="tooltiptext">Health Classification</span>
+            </li>
+            <li class="tooltip">
+                <a href="yield-prediction.html">Crop Yield Prediction</a>
+                <span class="tooltiptext">Yield Prediction</span>
+            </li>
+        </ul>
+        <div class="menu-toggle">
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h2>Wheat Weather Forecast</h2>
+            <p>Get hyper-local weather forecasts tailored specifically for wheat cultivation in your area.</p>
+        </div>
+
+        <div class="search-container">
+            <form class="search-form" id="locationSearch">
+                <input type="text" class="search-input" placeholder="Enter city or district..." required>
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="forecast-container">
+            <div class="current-weather">
+                <div class="weather-main">
+                    <i class="fas fa-sun weather-icon"></i>
+                    <div>
+                        <div class="weather-temp">24°C</div>
+                        <div>Sunny</div>
+                        <div>Ludhiana, Punjab</div>
+                    </div>
+                </div>
+                <div class="weather-details">
+                    <div class="weather-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">72%</div>
+                            <div class="stat-label">Humidity</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">8 km/h</div>
+                            <div class="stat-label">Wind Speed</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">2.4 mm</div>
+                            <div class="stat-label">Precipitation</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">1020 hPa</div>
+                            <div class="stat-label">Pressure</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="daily-forecast">
+                <h3 class="section-title">7-Day Forecast</h3>
+                <div class="forecast-cards">
+                    <div class="forecast-card">
+                        <div class="forecast-day">Today</div>
+                        <div class="forecast-date">Oct 12</div>
+                        <i class="fas fa-sun forecast-icon"></i>
+                        <div class="forecast-temp">24° / 14°</div>
+                        <div class="forecast-desc">Sunny</div>
+                    </div>
+                    <div class="forecast-card">
+                        <div class="forecast-day">Thu</div>
+                        <div class="forecast-date">Oct 13</div>
+                        <i class="fas fa-cloud-sun forecast-icon"></i>
+                        <div class="forecast-temp">23° / 15°</div>
+                        <div class="forecast-desc">Partly Cloudy</div>
+                    </div>
+                    <div class="forecast-card">
+                        <div class="forecast-day">Fri</div>
+                        <div class="forecast-date">Oct 14</div>
+                        <i class="fas fa-cloud forecast-icon"></i>
+                        <div class="forecast-temp">22° / 16°</div>
+                        <div class="forecast-desc">Cloudy</div>
+                    </div>
+                    <div class="forecast-card">
+                        <div class="forecast-day">Sat</div>
+                        <div class="forecast-date">Oct 15</div>
+                        <i class="fas fa-cloud-rain forecast-icon"></i>
+                        <div class="forecast-temp">20° / 16°</div>
+                        <div class="forecast-desc">Light Rain</div>
+                    </div>
+                    <div class="forecast-card">
+                        <div class="forecast-day">Sun</div>
+                        <div class="forecast-date">Oct 16</div>
+                        <i class="fas fa-cloud-sun-rain forecast-icon"></i>
+                        <div class="forecast-temp">21° / 15°</div>
+                        <div class="forecast-desc">Showers</div>
+                    </div>
+                    <div class="forecast-card">
+                        <div class="forecast-day">Mon</div>
+                        <div class="forecast-date">Oct 17</div>
+                        <i class="fas fa-cloud-sun forecast-icon"></i>
+                        <div class="forecast-temp">23° / 14°</div>
+                        <div class="forecast-desc">Partly Cloudy</div>
+                    </div>
+                    <div class="forecast-card">
+                        <div class="forecast-day">Tue</div>
+                        <div class="forecast-date">Oct 18</div>
+                        <i class="fas fa-sun forecast-icon"></i>
+                        <div class="forecast-temp">25° / 13°</div>
+                        <div class="forecast-desc">Sunny</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advisory-container">
+                <h3 class="advisory-title"><i class="fas fa-seedling"></i> Wheat Growing Advisory</h3>
+                <div class="advisory-content">
+                    <p><strong>Current Conditions:</strong> Ideal weather for wheat growth with adequate sunlight and moderate temperatures.</p>
+                    <p><strong>Irrigation:</strong> No immediate irrigation needed. Soil moisture levels are optimal.</p>
+                    <p><strong>Disease Risk:</strong> Low risk of fungal diseases due to low humidity. Monitor for early signs of powdery mildew if humidity increases.</p>
+                    <p><strong>Growth Stage:</strong> Vegetative growth phase - ensure proper nutrient availability, especially nitrogen.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>About Our Wheat Weather Forecast</h3>
+            <p>Our specialized wheat weather forecast provides hyper-local weather data combined with agricultural intelligence to help you make informed decisions about your wheat crop management. The system analyzes temperature, humidity, rainfall, and other factors critical to wheat cultivation.</p>
+            <p>For best results, search for your exact location. The advisory recommendations are tailored for the specific growth stage of wheat in your region based on planting date and current weather patterns.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="https://via.placeholder.com/40" alt="AgriTech Logo">
+                <h2>AgriTech Solutions</h2>
+            </div>
+            <p class="copyright">© 2023 AgriTech Solutions. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Location Search
+        document.getElementById('locationSearch').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const location = document.querySelector('.search-input').value;
+            
+            // In a real application, this would fetch weather data for the searched location
+            alert(`Searching for weather in: ${location}`);
+            
+            // You would typically call a function here to update the weather data
+            // updateWeatherData(location);
+        });
+
+        // Simulated weather data update
+        function updateWeatherData(location) {
+            // This would make an API call to get weather data
+            console.log(`Fetching weather data for ${location}`);
+            // Then update the DOM with the new data
+        }
+    </script>
+</body>
+</html>

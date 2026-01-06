@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crop Health Classification | AgriTech Solutions</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #4caf50;
+        --secondary-color: #388e3c;
+        --accent-color: #8bc34a;
+        --dark-color: #2e7d32;
+        --light-color: #c8e6c9;
+        --text-color: #333;
+        --light-text: #f8f8f8;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f9f9f9;
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+
+      /* Navigation */
+      nav {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--dark-color)
+        );
+        padding: 1rem 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo img {
+        height: 40px;
+        margin-right: 10px;
+      }
+
+      .logo h1 {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .nav-links {
+        display: flex;
+        list-style: none;
+      }
+
+      .nav-links li {
+        margin-left: 1.5rem;
+        position: relative;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition);
+        padding: 0.5rem 0.8rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        border: 2px solid transparent;
+      }
+
+      .nav-links a:hover {
+        border-color: rgba(255, 255, 255, 0.3);
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .nav-links a.active {
+        border-color: white;
+        position: relative;
+      }
+
+      .nav-links a.active::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 6px;
+        height: 6px;
+        background-color: white;
+        border-radius: 50%;
+      }
+
+      /* Tooltip */
+      .tooltip {
+        position: relative;
+        display: inline-block;
+      }
+
+      .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -60px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        font-size: 0.8rem;
+      }
+
+      .tooltip .tooltiptext::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #555 transparent transparent transparent;
+      }
+
+      .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      .menu-toggle {
+        display: none;
+        cursor: pointer;
+        color: white;
+        font-size: 1.5rem;
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-top: 80px;
+        padding: 3rem 5%;
+      }
+
+      .page-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        animation: fadeInDown 0.8s ease;
+      }
+
+      .page-header h2 {
+        font-size: 2.5rem;
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+        position: relative;
+        display: inline-block;
+      }
+
+      .page-header h2::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background-color: var(--accent-color);
+      }
+
+      .page-header p {
+        color: #666;
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      /* Classification Form */
+      .classification-container {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        max-width: 1100px;
+        margin: 0 auto;
+        animation: fadeInUp 0.8s ease;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--dark-color);
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: var(--transition);
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: var(--accent-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
+      }
+
+      .submit-btn {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: block;
+        margin: 2rem auto 0;
+        width: 200px;
+        text-align: center;
+      }
+
+      .submit-btn:hover {
+        background-color: var(--dark-color);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Results Table */
+      .results-container {
+        margin-top: 3.5rem;
+        animation: fadeIn 1s ease;
+        display: none;
+      }
+
+      .results-title {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: var(--dark-color);
+        font-size: 1.8rem;
+      }
+
+      .results-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        box-shadow: var(--shadow);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .results-table th {
+        background-color: var(--dark-color);
+        color: white;
+        padding: 0.4rem;
+        text-align: left;
+      }
+
+      .results-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+      }
+
+      .results-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      .results-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .results-table tr:hover {
+        background-color: var(--light-color);
+      }
+
+      .health-status {
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        text-align: center;
+        display: inline-block;
+      }
+
+      .excellent {
+        background-color: #4caf50;
+        color: white;
+        animation: pulse 2s infinite;
+      }
+
+      .good {
+        background-color: #8bc34a;
+        color: var(--text-color);
+      }
+
+      .fair {
+        background-color: #ffc107;
+        color: var(--text-color);
+      }
+
+      .poor {
+        background-color: #f44336;
+        color: white;
+        animation: pulse 2s infinite;
+      }
+
+      /* Info Section */
+      .info-section {
+        margin-top: 4rem;
+        padding: 2rem;
+        background-color: var(--light-color);
+        border-radius: 10px;
+        animation: fadeIn 1.2s ease;
+      }
+
+      .info-section h3 {
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      .info-section p {
+        color: #555;
+        margin-bottom: 1rem;
+      }
+
+      /* Status Legend */
+      .status-legend {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .status-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .status-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+      }
+
+      /* Footer */
+      footer {
+        background: linear-gradient(
+          135deg,
+          var(--dark-color),
+          var(--primary-color)
+        );
+        color: white;
+        padding: 2rem 5%;
+        text-align: center;
+        margin-top: 3rem;
+      }
+
+      .footer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .footer-logo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .footer-logo img {
+        height: 40px;
+        margin-right: 10px;
+      }
+
+      .footer-logo h2 {
+        font-size: 1.5rem;
+      }
+
+      .copyright {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-top: 1rem;
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .nav-links {
+          position: fixed;
+          top: 70px;
+          left: -100%;
+          width: 100%;
+          height: calc(100vh - 70px);
+          background-color: var(--dark-color);
+          flex-direction: column;
+          align-items: center;
+          padding-top: 2rem;
+          transition: var(--transition);
+        }
+
+        .nav-links.active {
+          left: 0;
+        }
+
+        .nav-links li {
+          margin: 1rem 0;
+        }
+
+        .menu-toggle {
+          display: block;
+        }
+
+        .page-header h2 {
+          font-size: 2rem;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .results-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .main-content {
+          padding: 2rem 3%;
+        }
+
+        .classification-container {
+          padding: 1.5rem;
+        }
+
+        .page-header h2 {
+          font-size: 1.8rem;
+        }
+
+        .status-legend {
+          flex-direction: column;
+          align-items: center;
+          gap: 0.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="logo">
+        <h1>AgriTech Solutions</h1>
+      </div>
+      <ul class="nav-links">
+        <li class="tooltip">
+          <a href="index.html">Home</a>
+          <span class="tooltiptext">Home Page</span>
+        </li>
+        <li class="tooltip">
+          <a href="weather.html">Weather Forecast</a>
+          <span class="tooltiptext">Weather Forecast</span>
+        </li>
+        <li class="tooltip">
+          <a href="crop-recommendation.html">Crop Recommendation</a>
+          <span class="tooltiptext">Crop Recommendation</span>
+        </li>
+        <li class="tooltip">
+          <a href="disease-detection.html">Crop Disease Detection</a>
+          <span class="tooltiptext">Disease Detection</span>
+        </li>
+        <li class="tooltip">
+          <a href="health-classification.html" class="active"
+            >Crop Health Classification</a
+          >
+          <span class="tooltiptext">Health Classification</span>
+        </li>
+        <li class="tooltip">
+          <a href="yield-prediction.html">Crop Yield Prediction</a>
+          <span class="tooltiptext">Yield Prediction</span>
+        </li>
+      </ul>
+      <div class="menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="page-header">
+        <h2>Crop Health Classification</h2>
+        <p>
+          Analyze your crop's health status by entering the plant parameters and
+          environmental conditions.
+        </p>
+      </div>
+
+      <div class="classification-container">
+        <form id="healthClassificationForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="plant-id">Plant ID</label>
+              <input
+                type="text"
+                id="plant-id"
+                name="plant-id"
+                placeholder="e.g. 1"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="soil-moisture">Soil Moisture (%)</label>
+              <input
+                type="float"
+                id="soil-moisture"
+                name="soil-moisture"
+                placeholder="e.g. 65"
+                min="0"
+                max="100"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="ambient-temp">Ambient Temperature (°C)</label>
+              <input
+                type="float"
+                id="ambient-temp"
+                name="ambient-temp"
+                placeholder="e.g. 25.5"
+                min="-10"
+                max="50"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="soil-temp">Soil Temperature (°C)</label>
+              <input
+                type="float"
+                id="soil-temp"
+                name="soil-temp"
+                placeholder="e.g. 22.3"
+                min="-10"
+                max="50"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="humidity">Humidity (%)</label>
+              <input
+                type="float"
+                id="humidity"
+                name="humidity"
+                placeholder="e.g. 70"
+                min="0"
+                max="100"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="light-intensity">Light Intensity (lux)</label>
+              <input
+                type="float"
+                id="light-intensity"
+                name="light-intensity"
+                placeholder="e.g. 500"
+                min="0"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="soil-ph">Soil pH</label>
+              <input
+                type="float"
+                id="soil-ph"
+                name="soil-ph"
+                placeholder="e.g. 6.5"
+                max="14"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="nitrogen">Nitrogen Level (ppm)</label>
+              <input
+                type="float"
+                id="nitrogen"
+                name="nitrogen"
+                placeholder="e.g. 45"
+                min="0"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="phosphorus">Phosphorus Level (ppm)</label>
+              <input
+                type="float"
+                id="phosphorus"
+                name="phosphorus"
+                placeholder="e.g. 30"
+                min="0"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="potassium">Potassium Level (ppm)</label>
+              <input
+                type="float"
+                id="potassium"
+                name="potassium"
+                placeholder="e.g. 50"
+                min="0"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="chlorophyll">Chlorophyll Content (µg/cm²)</label>
+              <input
+                type="float"
+                id="chlorophyll"
+                name="chlorophyll"
+                placeholder="e.g. 35"
+                min="0"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="electrochemical">Electrochemical Signal (mV)</label>
+              <input
+                type="float"
+                id="electrochemical"
+                name="electrochemical"
+                placeholder="e.g. 120"
+                min="0"
+                required
+              />
+            </div>
+          </div>
+          <button type="submit" class="submit-btn">Analyze Health</button>
+        </form>
+
+        <div class="results-container" id="resultsContainer">
+          <h3 class="results-title">Health Classification Results</h3>
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Plant ID</th>
+                <th>Soil Moisture</th>
+                <th>Ambient Temp</th>
+                <th>Soil Temp</th>
+                <th>Humidity</th>
+                <th>Light</th>
+                <th>Soil pH</th>
+                <th>Nitrogen</th>
+                <th>Phosphorus</th>
+                <th>Potassium</th>
+                <th>Chlorophyll</th>
+                <th>Electrochemical</th>
+                <th>Health Status</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody">
+              <!-- Results will be inserted here by JavaScript -->
+            </tbody>
+          </table>
+
+          <div class="status-legend">
+            <div class="status-item">
+              <div class="status-color" style="background-color: #4caf50"></div>
+              <span>Excellent</span>
+            </div>
+            <div class="status-item">
+              <div class="status-color" style="background-color: #8bc34a"></div>
+              <span>Good</span>
+            </div>
+            <div class="status-item">
+              <div class="status-color" style="background-color: #ffc107"></div>
+              <span>Fair</span>
+            </div>
+            <div class="status-item">
+              <div class="status-color" style="background-color: #f44336"></div>
+              <span>Poor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h3>About Our Health Classification System</h3>
+        <p>
+          Our advanced health classification model analyzes multiple
+          physiological and environmental parameters to assess your crop's
+          health status. The system evaluates nutrient levels, environmental
+          conditions, and plant responses to provide a comprehensive health
+          assessment.
+        </p>
+        <p>
+          For accurate results, please provide measurements from reliable
+          sensors and testing methods. The classification can help you identify
+          potential issues early and take corrective actions to maintain optimal
+          crop health.
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-logo">
+          <h2>AgriTech Solutions</h2>
+        </div>
+        <p class="copyright">© 2023 AgriTech Solutions. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      // Mobile Menu Toggle
+      const menuToggle = document.querySelector(".menu-toggle");
+      const navLinks = document.querySelector(".nav-links");
+
+      menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("active");
+      });
+
+      // Form Submission
+      document
+        .getElementById("healthClassificationForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Get form values
+          const plantId = document.getElementById("plant-id").value;
+          const soilMoisture = document.getElementById("soil-moisture").value;
+          const ambientTemp = document.getElementById("ambient-temp").value;
+          const soilTemp = document.getElementById("soil-temp").value;
+          const humidity = document.getElementById("humidity").value;
+          const lightIntensity =
+            document.getElementById("light-intensity").value;
+          const soilPh = document.getElementById("soil-ph").value;
+          const nitrogen = document.getElementById("nitrogen").value;
+          const phosphorus = document.getElementById("phosphorus").value;
+          const potassium = document.getElementById("potassium").value;
+          const chlorophyll = document.getElementById("chlorophyll").value;
+          const electrochemical =
+            document.getElementById("electrochemical").value;
+
+          // Create a JSON object with the data
+          const formData = {
+            soilMoisture: parseFloat(soilMoisture),
+            ambientTemp: parseFloat(ambientTemp),
+            soilTemp: parseFloat(soilTemp),
+            humidity: parseFloat(humidity),
+            lightIntensity: parseFloat(lightIntensity),
+            soilPh: parseFloat(soilPh),
+            nitrogen: parseFloat(nitrogen),
+            phosphorus: parseFloat(phosphorus),
+            potassium: parseFloat(potassium),
+            chlorophyll: parseFloat(chlorophyll),
+            electrochemical: parseFloat(electrochemical),
+          };
+
+          // Send data to Flask backend
+          fetch("http://127.0.0.1:5000/predict", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              const healthStatus = data.healthStatus;
+              const healthScore = data.healthScore;
+
+              // Display results
+              const resultsBody = document.getElementById("resultsBody");
+              const healthClass = (healthStatus || "unknown").toLowerCase();
+              // You can map status to classes like "excellent", "good", etc.
+
+              resultsBody.innerHTML = `
+            <tr>
+                <td>${plantId}</td>
+                <td>${soilMoisture}%</td>
+                <td>${ambientTemp}°C</td>
+                <td>${soilTemp}°C</td>
+                <td>${humidity}%</td>
+                <td>${lightIntensity} lux</td>
+                <td>${soilPh}</td>
+                <td>${nitrogen} ppm</td>
+                <td>${phosphorus} ppm</td>
+                <td>${potassium} ppm</td>
+                <td>${chlorophyll} µg/cm²</td>
+                <td>${electrochemical} mV</td>
+                <td><span class="health-status ${healthClass}">${healthStatus}</span></td>
+            </tr>
+        `;
+
+              // Show results container with animation
+              const resultsContainer =
+                document.getElementById("resultsContainer");
+              resultsContainer.style.display = "block";
+
+              // Scroll to results
+              resultsContainer.scrollIntoView({ behavior: "smooth" });
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        });
+    </script>
+  </body>
+</html>

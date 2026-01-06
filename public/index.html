@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AgriTech Solutions - Smart Farming Platform</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #4caf50;
+        --secondary-color: #388e3c;
+        --accent-color: #8bc34a;
+        --dark-color: #2e7d32;
+        --light-color: #c8e6c9;
+        --text-color: #333;
+        --light-text: #f8f8f8;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f9f9f9;
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+
+      /* Navigation */
+      nav {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--dark-color)
+        );
+        padding: 1rem 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo img {
+        height: 40px;
+        margin-right: 10px;
+      }
+
+      .logo h1 {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .nav-links {
+        display: flex;
+        list-style: none;
+      }
+
+      .nav-links li {
+        margin-left: 2rem;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition);
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+      }
+
+      .nav-links a:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .nav-links a.active {
+        background-color: white;
+        color: var(--primary-color);
+      }
+
+      .menu-toggle {
+        display: none;
+        cursor: pointer;
+        color: white;
+        font-size: 1.5rem;
+      }
+
+      /* Hero Section */
+      .hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+          url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80");
+        background-size: cover;
+        background-position: center;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: white;
+        padding: 0 2rem;
+        margin-top: 60px;
+      }
+
+      .hero h2 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        animation: fadeInDown 1s ease;
+      }
+
+      .hero p {
+        font-size: 1.2rem;
+        max-width: 800px;
+        margin-bottom: 2rem;
+        animation: fadeInUp 1s ease;
+      }
+
+      .cta-button {
+        background-color: var(--accent-color);
+        color: var(--text-color);
+        padding: 0.8rem 2rem;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        animation: fadeIn 1.5s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .cta-button:hover {
+        background-color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Services Section */
+      .services {
+        padding: 5rem 5%;
+        background-color: white;
+      }
+
+      .section-title {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .section-title h2 {
+        font-size: 2.5rem;
+        color: var(--dark-color);
+        position: relative;
+        display: inline-block;
+        padding-bottom: 1rem;
+      }
+
+      .section-title h2::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background-color: var(--accent-color);
+      }
+
+      .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .service-card {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        text-align: center;
+        padding: 2rem;
+        border-top: 5px solid var(--accent-color);
+      }
+
+      .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .service-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+      }
+
+      .service-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--dark-color);
+      }
+
+      .service-card p {
+        color: #666;
+        margin-bottom: 1.5rem;
+      }
+
+      .service-button {
+        background-color: var(--light-color);
+        color: var(--dark-color);
+        padding: 0.6rem 1.5rem;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .service-button:hover {
+        background-color: var(--accent-color);
+        color: white;
+      }
+
+      /* Video Section */
+      .video-section {
+        padding: 5rem 5%;
+        background: linear-gradient(135deg, var(--light-color), white);
+        text-align: center;
+      }
+
+      .video-container {
+        max-width: 900px;
+        margin: 0 auto 3rem;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      .video-container video {
+        width: 100%;
+        display: block;
+      }
+
+      .video-info {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .video-info h3 {
+        font-size: 2rem;
+        color: var(--dark-color);
+        margin-bottom: 1.5rem;
+      }
+
+      .video-info p {
+        color: #555;
+        margin-bottom: 2rem;
+      }
+
+      /* Footer */
+      footer {
+        background: linear-gradient(
+          135deg,
+          var(--dark-color),
+          var(--primary-color)
+        );
+        color: white;
+        padding: 3rem 5%;
+        text-align: center;
+      }
+
+      .footer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .footer-logo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .footer-logo img {
+        height: 50px;
+        margin-right: 10px;
+      }
+
+      .footer-logo h2 {
+        font-size: 1.8rem;
+      }
+
+      .social-icons {
+        margin-bottom: 1.5rem;
+      }
+
+      .social-icons a {
+        color: white;
+        font-size: 1.5rem;
+        margin: 0 10px;
+        transition: var(--transition);
+      }
+
+      .social-icons a:hover {
+        color: var(--accent-color);
+        transform: translateY(-3px);
+      }
+
+      .footer-links {
+        display: flex;
+        list-style: none;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .footer-links li {
+        margin: 0 15px;
+      }
+
+      .footer-links a {
+        color: white;
+        text-decoration: none;
+        transition: var(--transition);
+      }
+
+      .footer-links a:hover {
+        color: var(--accent-color);
+      }
+
+      .copyright {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .nav-links {
+          position: fixed;
+          top: 60px;
+          left: -100%;
+          width: 100%;
+          height: calc(100vh - 60px);
+          background-color: var(--dark-color);
+          flex-direction: column;
+          align-items: center;
+          padding-top: 2rem;
+          transition: var(--transition);
+        }
+
+        .nav-links.active {
+          left: 0;
+        }
+
+        .nav-links li {
+          margin: 1rem 0;
+        }
+
+        .menu-toggle {
+          display: block;
+        }
+
+        .hero h2 {
+          font-size: 2.2rem;
+        }
+
+        .hero p {
+          font-size: 1rem;
+        }
+
+        .section-title h2 {
+          font-size: 2rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .hero h2 {
+          font-size: 1.8rem;
+        }
+
+        .services-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="logo">
+        <h1>AgriTech Solutions</h1>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <div class="menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <h2>Revolutionizing Agriculture with AI Technology</h2>
+      <p>
+        Empowering farmers with cutting-edge tools for weather forecasting, crop
+        recommendations, disease detection, and yield prediction to maximize
+        productivity and sustainability.
+      </p>
+      <a href="#services" class="cta-button">Explore Our Services</a>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+      <div class="section-title">
+        <h2>Our Services</h2>
+      </div>
+      <div class="services-grid">
+        <!-- Weather Forecast -->
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="fas fa-cloud-sun"></i>
+          </div>
+          <h3>Weather Forecast</h3>
+          <p>
+            Get accurate, hyper-local weather predictions tailored to your
+            farm's location. Plan irrigation and planting with confidence using
+            our advanced forecasting system.
+          </p>
+          <p>.</p>
+          <a href="weather.html" class="service-button">Learn More</a>
+        </div>
+
+        <!-- Crop Recommendation -->
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="fas fa-seedling"></i>
+          </div>
+          <h3>Crop Recommendation</h3>
+          <p>
+            Our AI analyzes your soil composition, climate data, and market
+            trends to suggest the most profitable and sustainable crops for your
+            specific conditions.
+          </p>
+          <p></p>
+          <a href="crop-recommendation.html" class="service-button"
+            >Learn More</a
+          >
+        </div>
+
+        <!-- Crop Disease Detection -->
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="fas fa-bug"></i>
+          </div>
+          <h3>Crop Disease Detection</h3>
+          <p>
+            Upload images of your crops and receive instant analysis of
+            potential diseases or pests with treatment recommendations to
+            protect your yield.
+          </p>
+          <a href="disease-detection.html" class="service-button">Learn More</a>
+        </div>
+
+        <!-- Crop Health Classification -->
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="fas fa-heartbeat"></i>
+          </div>
+          <h3>Crop Health Classification</h3>
+          <p>
+            Our system evaluates plant vitality through image recognition and
+            sensor data, providing health scores and improvement suggestions.
+          </p>
+          <a href="health-classification.html" class="service-button"
+            >Learn More</a
+          >
+        </div>
+
+        <!-- Crop Yield Prediction -->
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h3>Crop Yield Prediction</h3>
+          <p>
+            Advanced algorithms predict your harvest volume with remarkable
+            accuracy, helping with planning, storage, and market negotiations.
+          </p>
+          <a href="yield-prediction.html" class="service-button">Learn More</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Video Section -->
+    <section class="video-section">
+      <div class="video-container">
+        <video
+          controls
+          poster="https://images.unsplash.com/photo-1586771107445-d3ca888129ce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+        >
+          <source src="your-video-file.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <div class="video-info">
+        <h3>Transforming Agriculture with Smart Technology</h3>
+        <p>
+          Discover how our platform is helping farmers worldwide increase
+          yields, reduce waste, and make data-driven decisions. This video
+          showcases real-world applications of our technology across different
+          farming environments, from small family farms to large agricultural
+          enterprises.
+        </p>
+        <p>
+          Our solutions integrate seamlessly with your existing operations,
+          providing actionable insights without requiring technical expertise.
+          Join the agricultural revolution today and become part of a growing
+          community of tech-savvy farmers.
+        </p>
+        <a href="#" class="cta-button">Watch Full Story</a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-logo">
+          <h2>AgriTech Solutions</h2>
+        </div>
+        <div class="social-icons">
+          <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin"></i></a>
+          <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+        <ul class="footer-links">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Services</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+        <p class="copyright">© 2023 AgriTech Solutions. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      // Mobile Menu Toggle
+      const menuToggle = document.querySelector(".menu-toggle");
+      const navLinks = document.querySelector(".nav-links");
+
+      menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("active");
+      });
+
+      // Smooth Scrolling for Navigation Links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+
+          document.querySelector(this.getAttribute("href")).scrollIntoView({
+            behavior: "smooth",
+          });
+
+          // Close mobile menu if open
+          if (navLinks.classList.contains("active")) {
+            navLinks.classList.remove("active");
+          }
+        });
+      });
+
+      // Animation on Scroll
+      const animateOnScroll = () => {
+        const elements = document.querySelectorAll(
+          ".service-card, .section-title, .video-info"
+        );
+
+        elements.forEach((element) => {
+          const elementPosition = element.getBoundingClientRect().top;
+          const screenPosition = window.innerHeight / 1.3;
+
+          if (elementPosition < screenPosition) {
+            element.style.opacity = "1";
+            element.style.transform = "translateY(0)";
+          }
+        });
+      };
+
+      // Set initial state for animated elements
+      document
+        .querySelectorAll(".service-card, .section-title, .video-info")
+        .forEach((element) => {
+          element.style.opacity = "0";
+          element.style.transform = "translateY(20px)";
+          element.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+        });
+
+      window.addEventListener("scroll", animateOnScroll);
+      window.addEventListener("load", animateOnScroll);
+
+      // Active link highlighting
+      const sections = document.querySelectorAll("section");
+      const navItems = document.querySelectorAll(".nav-links a");
+
+      window.addEventListener("scroll", () => {
+        let current = "";
+
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.clientHeight;
+
+          if (pageYOffset >= sectionTop - 300) {
+            current = section.getAttribute("id");
+          }
+        });
+
+        navItems.forEach((item) => {
+          item.classList.remove("active");
+          if (item.getAttribute("href") === `#${current}`) {
+            item.classList.add("active");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

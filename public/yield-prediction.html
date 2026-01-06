@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crop Yield Prediction | AgriTech Solutions</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #4caf50;
+        --secondary-color: #388e3c;
+        --accent-color: #8bc34a;
+        --dark-color: #2e7d32;
+        --light-color: #c8e6c9;
+        --text-color: #333;
+        --light-text: #f8f8f8;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f9f9f9;
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+
+      /* Navigation */
+      nav {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--dark-color)
+        );
+        padding: 1rem 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo img {
+        height: 40px;
+        margin-right: 10px;
+      }
+
+      .logo h1 {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .nav-links {
+        display: flex;
+        list-style: none;
+      }
+
+      .nav-links li {
+        margin-left: 1.5rem;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition);
+        padding: 0.5rem 0.8rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+      }
+
+      .nav-links a:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .nav-links a.active {
+        background-color: white;
+        color: var(--primary-color);
+      }
+
+      .menu-toggle {
+        display: none;
+        cursor: pointer;
+        color: white;
+        font-size: 1.5rem;
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-top: 80px;
+        padding: 3rem 5%;
+      }
+
+      .page-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        animation: fadeInDown 0.8s ease;
+      }
+
+      .page-header h2 {
+        font-size: 2.5rem;
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+        position: relative;
+        display: inline-block;
+      }
+
+      .page-header h2::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background-color: var(--accent-color);
+      }
+
+      .page-header p {
+        color: #666;
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      /* Prediction Form */
+      .prediction-container {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        max-width: 1000px;
+        margin: 0 auto;
+        animation: fadeInUp 0.8s ease;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--dark-color);
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: var(--transition);
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: var(--accent-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
+      }
+
+      .radio-group {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .radio-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .radio-option input {
+        width: auto;
+      }
+
+      .submit-btn {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: block;
+        margin: 2rem auto 0;
+        width: 200px;
+        text-align: center;
+      }
+
+      .submit-btn:hover {
+        background-color: var(--dark-color);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Results Table */
+      .results-container {
+        margin-top: 3rem;
+        animation: fadeIn 1s ease;
+        display: none;
+      }
+
+      .results-title {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: var(--dark-color);
+        font-size: 1.8rem;
+      }
+
+      .results-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        box-shadow: var(--shadow);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .results-table th {
+        background-color: var(--dark-color);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+      }
+
+      .results-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+      }
+
+      .results-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      .results-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .results-table tr:hover {
+        background-color: var(--light-color);
+      }
+
+      .predicted-yield {
+        font-weight: 600;
+        color: var(--primary-color);
+        animation: pulse 2s infinite;
+      }
+
+      /* Info Section */
+      .info-section {
+        margin-top: 4rem;
+        padding: 2rem;
+        background-color: var(--light-color);
+        border-radius: 10px;
+        animation: fadeIn 1.2s ease;
+      }
+
+      .info-section h3 {
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      .info-section p {
+        color: #555;
+        margin-bottom: 1rem;
+      }
+
+      /* Footer */
+      footer {
+        background: linear-gradient(
+          135deg,
+          var(--dark-color),
+          var(--primary-color)
+        );
+        color: white;
+        padding: 2rem 5%;
+        text-align: center;
+        margin-top: 3rem;
+      }
+
+      .footer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .footer-logo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .footer-logo img {
+        height: 40px;
+        margin-right: 10px;
+      }
+
+      .footer-logo h2 {
+        font-size: 1.5rem;
+      }
+
+      .copyright {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-top: 1rem;
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .nav-links {
+          position: fixed;
+          top: 70px;
+          left: -100%;
+          width: 100%;
+          height: calc(100vh - 70px);
+          background-color: var(--dark-color);
+          flex-direction: column;
+          align-items: center;
+          padding-top: 2rem;
+          transition: var(--transition);
+        }
+
+        .nav-links.active {
+          left: 0;
+        }
+
+        .nav-links li {
+          margin: 1rem 0;
+        }
+
+        .menu-toggle {
+          display: block;
+        }
+
+        .page-header h2 {
+          font-size: 2rem;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .main-content {
+          padding: 2rem 3%;
+        }
+
+        .prediction-container {
+          padding: 1.5rem;
+        }
+
+        .page-header h2 {
+          font-size: 1.8rem;
+        }
+
+        .radio-group {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="logo">
+        <h1>AgriTech Solutions</h1>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="weather.html">Weather Forecast</a></li>
+        <li><a href="crop-recommendation.html">Crop Recommendation</a></li>
+        <li><a href="disease-detection.html">Crop Disease Detection</a></li>
+        <li>
+          <a href="health-classification.html">Crop Health Classification</a>
+        </li>
+        <li>
+          <a href="yield-prediction.html" class="active"
+            >Crop Yield Prediction</a
+          >
+        </li>
+      </ul>
+      <div class="menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="page-header">
+        <h2>Crop Yield Prediction</h2>
+        <p>
+          Enter your agricultural parameters to predict the expected yield for
+          your crops in tons per hectare.
+        </p>
+      </div>
+
+      <div class="prediction-container">
+        <form id="yieldPredictionForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="region">Region</label>
+              <select id="region" name="region" required>
+                <option value="">Select Region</option>
+                <option value="east">East</option>
+                <option value="west">West</option>
+                <option value="north">North</option>
+                <option value="south">South</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="soiltype">Soil Type</label>
+              <select id="soiltype" name="soiltype" required>
+                <option value="">Select Soil Type</option>
+                <option value="sandy">Sandy</option>
+                <option value="loam">Loam</option>
+                <option value="clay">Clay</option>
+                <option value="silt">Silt</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="crop">Crop</label>
+              <select id="crop" name="crop" required>
+                <option value="">Select Crop</option>
+                <option value="wheat">Wheat</option>
+                <option value="rice">Rice</option>
+                <option value="corn">Corn</option>
+                <option value="soybean">Soybean</option>
+                <option value="cotton">Cotton</option>
+                <option value="potato">Potato</option>
+                <option value="sugarcane">Sugarcane</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="rainfall">Rainfall (mm)</label>
+              <input
+                type="number"
+                id="rainfall"
+                name="rainfall"
+                placeholder="e.g. 120"
+                min="0"
+                max="2000"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="temperature">Temperature (°C)</label>
+              <input
+                type="number"
+                id="temperature"
+                name="temperature"
+                placeholder="e.g. 25"
+                step="0.1"
+                min="-10"
+                max="50"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>Fertilizer Used</label>
+              <div class="radio-group">
+                <div class="radio-option">
+                  <input
+                    type="radio"
+                    id="fertilizer-yes"
+                    name="fertilizer"
+                    value="true"
+                    required
+                  />
+                  <label for="fertilizer-yes">Yes</label>
+                </div>
+                <div class="radio-option">
+                  <input
+                    type="radio"
+                    id="fertilizer-no"
+                    name="fertilizer"
+                    value="false"
+                  />
+                  <label for="fertilizer-no">No</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Irrigation Used</label>
+              <div class="radio-group">
+                <div class="radio-option">
+                  <input
+                    type="radio"
+                    id="irrigation-yes"
+                    name="irrigation"
+                    value="true"
+                    required
+                  />
+                  <label for="irrigation-yes">Yes</label>
+                </div>
+                <div class="radio-option">
+                  <input
+                    type="radio"
+                    id="irrigation-no"
+                    name="irrigation"
+                    value="false"
+                  />
+                  <label for="irrigation-no">No</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="weather">Weather</label>
+              <select id="weather" name="weather" required>
+                <option value="">Select Weather</option>
+                <option value="cloudy">Cloudy</option>
+                <option value="rainy">Rainy</option>
+                <option value="sunny">Sunny</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="days-to-harvest">Days to Harvest</label>
+              <input
+                type="number"
+                id="days-to-harvest"
+                name="days-to-harvest"
+                placeholder="e.g. 90"
+                min="1"
+                max="365"
+                required
+              />
+            </div>
+          </div>
+          <button type="submit" class="submit-btn">Predict Yield</button>
+        </form>
+
+        <div class="results-container" id="resultsContainer">
+          <h3 class="results-title">Yield Prediction Results</h3>
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Region</th>
+                <th>Soil Type</th>
+                <th>Crop</th>
+                <th>Rainfall</th>
+                <th>Temperature</th>
+                <th>Fertilizer</th>
+                <th>Irrigation</th>
+                <th>Weather</th>
+                <th>Days to Harvest</th>
+                <th>Predicted Yield</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody">
+              <!-- Results will be inserted here by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h3>About Our Yield Prediction Model</h3>
+        <p>
+          Our yield prediction system uses advanced machine learning algorithms
+          trained on historical agricultural data from thousands of farms. The
+          model considers multiple factors including environmental conditions,
+          soil properties, and farming practices to provide accurate yield
+          estimates.
+        </p>
+        <p>
+          For best results, please provide accurate measurements from your farm
+          records. The prediction accuracy improves with precise input data and
+          can help you make informed decisions about crop management and
+          resource allocation.
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-logo">
+          <h2>AgriTech Solutions</h2>
+        </div>
+        <p class="copyright">© 2023 AgriTech Solutions. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      /*
+      // Mobile Menu Toggle
+      const menuToggle = document.querySelector(".menu-toggle");
+      const navLinks = document.querySelector(".nav-links");
+
+      menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("active");
+      });
+
+      // Form Submission
+      document
+        .getElementById("yieldPredictionForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Get form values
+          const region = document.getElementById("region").value;
+          const soilType = document.getElementById("soiltype").value;
+          const crop = document.getElementById("crop").value;
+          const rainfall = document.getElementById("rainfall").value;
+          const temperature = document.getElementById("temperature").value;
+          const fertilizer = document.querySelector(
+            'input[name="fertilizer"]:checked'
+          ).value;
+          const irrigation = document.querySelector(
+            'input[name="irrigation"]:checked'
+          ).value;
+          const weather = document.getElementById("weather").value;
+          const daysToHarvest =
+            document.getElementById("days-to-harvest").value;
+
+          // In a real application, you would send this data to a server for processing
+          // For this demo, we'll simulate a response with a calculated yield
+
+          // Base yield based on crop type
+          let baseYield = 0;
+          switch (crop) {
+            case "wheat":
+              baseYield = 3.5;
+              break;
+            case "rice":
+              baseYield = 4.2;
+              break;
+            case "corn":
+              baseYield = 6.8;
+              break;
+            case "soybean":
+              baseYield = 2.7;
+              break;
+            case "cotton":
+              baseYield = 1.8;
+              break;
+            case "potato":
+              baseYield = 20.5;
+              break;
+            case "sugarcane":
+              baseYield = 70.0;
+              break;
+            default:
+              baseYield = 4.0;
+          }
+
+          // Apply modifiers based on other factors
+          let yieldModifier = 1.0;
+
+          // Soil type modifiers
+          if (soilType === "loam") yieldModifier *= 1.15;
+          else if (soilType === "clay") yieldModifier *= 0.95;
+          else if (soilType === "silt") yieldModifier *= 1.05;
+          else if (soilType === "sandy") yieldModifier *= 0.85;
+
+          // Fertilizer modifier
+          if (fertilizer === "true") yieldModifier *= 1.25;
+
+          // Irrigation modifier
+          if (irrigation === "true") yieldModifier *= 1.2;
+
+          // Weather modifier
+          if (weather === "sunny") yieldModifier *= 1.1;
+          else if (weather === "rainy") yieldModifier *= 0.9;
+
+          // Temperature modifier (optimal around 20-25°C)
+          const temp = parseFloat(temperature);
+          if (temp < 10 || temp > 35) yieldModifier *= 0.7;
+          else if (temp >= 20 && temp <= 25) yieldModifier *= 1.1;
+
+          // Days to harvest modifier
+          const days = parseInt(daysToHarvest);
+          if (days < 60) yieldModifier *= 0.8;
+          else if (days > 120) yieldModifier *= 1.05;
+
+          // Rainfall modifier (optimal around 500-800mm)
+          const rain = parseFloat(rainfall);
+          if (rain < 300) yieldModifier *= 0.8;
+          else if (rain > 1000) yieldModifier *= 0.9;
+          else if (rain >= 500 && rain <= 800) yieldModifier *= 1.05;
+
+          // Calculate final yield
+          const predictedYield = (baseYield * yieldModifier).toFixed(2);
+
+          // Display results
+          const resultsBody = document.getElementById("resultsBody");
+          resultsBody.innerHTML = `
+                <tr>
+                    <td>${region.charAt(0).toUpperCase() + region.slice(1)}</td>
+                    <td>${
+                      soilType.charAt(0).toUpperCase() + soilType.slice(1)
+                    }</td>
+                    <td>${crop.charAt(0).toUpperCase() + crop.slice(1)}</td>
+                    <td>${rainfall} mm</td>
+                    <td>${temperature}°C</td>
+                    <td>${fertilizer === "true" ? "Yes" : "No"}</td>
+                    <td>${irrigation === "true" ? "Yes" : "No"}</td>
+                    <td>${
+                      weather.charAt(0).toUpperCase() + weather.slice(1)
+                    }</td>
+                    <td>${daysToHarvest} days</td>
+                    <td class="predicted-yield">${predictedYield} tons/ha</td>
+                </tr>
+            `;
+
+          // Show results container with animation
+          const resultsContainer = document.getElementById("resultsContainer");
+          resultsContainer.style.display = "block";
+
+          // Scroll to results
+          resultsContainer.scrollIntoView({ behavior: "smooth" });
+        });
+
+      // Input validation
+      document.querySelectorAll('input[type="number"]').forEach((input) => {
+        input.addEventListener("change", function () {
+          const min = parseFloat(this.min);
+          const max = parseFloat(this.max);
+          const value = parseFloat(this.value);
+
+          if (value < min) {
+            this.value = min;
+          } else if (value > max) {
+            this.value = max;
+          }
+        });
+      });
+      */
+
+      // Mobile Menu Toggle
+      const menuToggle = document.querySelector(".menu-toggle");
+      const navLinks = document.querySelector(".nav-links");
+      menuToggle.addEventListener("click", () => {
+        navLinks.classList.toggle("active");
+      });
+
+      // Form Submission → call Flask API
+      document
+        .getElementById("yieldPredictionForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          // Gather form values
+          const payload = {
+            region: document.getElementById("region").value,
+            soiltype: document.getElementById("soiltype").value,
+            crop: document.getElementById("crop").value,
+            rainfall: parseFloat(document.getElementById("rainfall").value),
+            temperature: parseFloat(
+              document.getElementById("temperature").value
+            ),
+            fertilizer: document.querySelector(
+              'input[name="fertilizer"]:checked'
+            ).value,
+            irrigation: document.querySelector(
+              'input[name="irrigation"]:checked'
+            ).value,
+            weather: document.getElementById("weather").value,
+            days_to_harvest: parseInt(
+              document.getElementById("days-to-harvest").value
+            ),
+          };
+
+          // Input validation (check if required fields are filled)
+          if (
+            !payload.region ||
+            !payload.soiltype ||
+            !payload.crop ||
+            isNaN(payload.rainfall) ||
+            isNaN(payload.temperature) ||
+            isNaN(payload.days_to_harvest) ||
+            !payload.fertilizer ||
+            !payload.irrigation ||
+            !payload.weather
+          ) {
+            alert("Please fill all the required fields correctly.");
+            return;
+          }
+
+          try {
+            // Call the Flask API to predict yield
+            const resp = await fetch("http://127.0.0.1:5000/predict", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+
+            const data = await resp.json();
+
+            // Handle non-OK responses
+            if (!resp.ok) throw new Error(data.error || "Prediction failed");
+
+            // Render the result in a table
+            document.getElementById("resultsBody").innerHTML = `
+        <tr>
+          <td>${payload.region}</td>
+          <td>${payload.soiltype}</td>
+          <td>${payload.crop}</td>
+          <td>${payload.rainfall} mm</td>
+          <td>${payload.temperature} °C</td>
+          <td>${payload.fertilizer === "true" ? "Yes" : "No"}</td>
+          <td>${payload.irrigation === "true" ? "Yes" : "No"}</td>
+          <td>${payload.weather}</td>
+          <td>${payload.days_to_harvest} days</td>
+          <td class="predicted-yield">${data.predicted_yield} tons/ha</td>
+        </tr>
+      `;
+
+            // Show results container
+            const resultsContainer =
+              document.getElementById("resultsContainer");
+            resultsContainer.style.display = "block";
+            resultsContainer.scrollIntoView({ behavior: "smooth" });
+          } catch (err) {
+            alert("Error: " + err.message);
+            console.error(err);
+          }
+        });
+
+      // Input validation (no change)
+      document.querySelectorAll('input[type="number"]').forEach((input) => {
+        input.addEventListener("change", function () {
+          const min = parseFloat(this.min);
+          const max = parseFloat(this.max);
+          const value = parseFloat(this.value);
+          if (value < min) this.value = min;
+          else if (value > max) this.value = max;
+        });
+      });
+    </script>
+  </body>
+</html>
