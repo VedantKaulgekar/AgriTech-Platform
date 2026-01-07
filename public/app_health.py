@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load the model
-model = tf.keras.models.load_model('farm/public/plant_health_model.h5')
+model = tf.keras.models.load_model('public/plant_health_model.h5')
 
 @app.route('/predict', methods=['POST'])
 def predict():
